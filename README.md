@@ -77,7 +77,7 @@ src/
 
 ### 🚀 Entrega
 1. Haz un fork de este repositorio (o crea uno nuevo).
-2. Implementa tu solución en una rama develop.
+2. Implementa tu solución y enviala con un push o enviandonos el enlace del repositorio publico.
 3. Incluye un README.md con:
 - Instrucciones para correr con docker o docker-compose
 - Cómo probar endpoints (Postman, Swagger, cURL)
