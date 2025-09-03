@@ -79,7 +79,7 @@ Todos los endpoints están bajo /orders.
 
 ### Crear orden
 
-``bash
+```bash
 curl -X POST http://localhost:3000/orders \
 -H "Content-Type: application/json" \
 -d '{
@@ -97,7 +97,7 @@ curl -X POST http://localhost:3000/orders \
 curl http://localhost:3000/orders
 ```
 
-###Avanzar estado de una orden
+### Avanzar estado de una orden
 
 ```bash
 curl -X POST http://localhost:3000/orders/1/advance
@@ -176,7 +176,7 @@ yarn start:dev
 
 - Swagger para documentación automática
 
-## 4️⃣ Preguntas adicionales del challenge
+## Preguntas adicionales del challenge
 
 ### ¿Cómo desacoplarías la lógica de negocio del framework NestJS?
 
