@@ -1,91 +1,204 @@
-# 🧪 OlaClick Backend Challenge - NestJS Edition
+# OlaClick Orders API
 
-## 🎯 Objetivo
-
-Diseñar e implementar una API RESTful que gestione órdenes de un restaurante utilizando el stack:
-
-- **Node.js + TypeScript**
-- **NestJS (arquitectura modular y principios SOLID)**
-- **Sequelize (ORM)**
-- **PostgreSQL** como base de datos
-- **Redis** para cache
-- **Docker** para contenerización
+API RESTful para manejo de órdenes usando NestJS, Sequelize, PostgreSQL y Redis.  
 
 ---
 
-## 📌 Requerimientos Funcionales
+## 🚀 Requisitos
 
-### 1. Listar todas las órdenes
-- Endpoint: `GET /orders`
-- Devuelve todas las órdenes con estado diferente de `delivered`.
-- Resultado cacheado en **Redis** por 30 segundos.
+- Node.js >= 20
+- Docker & Docker Compose
+- Yarn o NPM
+- PostgreSQL y Redis (contenedores Docker incluidos)
 
-### 2. Crear una nueva orden
-- Endpoint: `POST /orders`
-- Inserta una nueva orden en estado `initiated`.
-- Estructura esperada:
-  ```json
-  {
-    "clientName": "Ana López",
-    "items": [
-      { "description": "Ceviche", "quantity": 2, "unitPrice": 50 },
-      { "description": "Chicha morada", "quantity": 1, "unitPrice": 10 }
-    ]
-  }
+---
 
-### 3. Avanzar estado de una orden
-Endpoint: `POST /orders/:id/advance`
+## 🐳 Correr la aplicación con Docker
 
-Progreso del estado:
+1. Construir y levantar contenedores:
 
-`initiated → sent → delivered`
+```bash
+docker compose -f docker-compose.yml up -d
 
-Si llega a `delivered`, debe eliminarse de la base de datos y del caché.
+2. Revisar los contenedores activos:
 
-### 4. Ver detalle de una orden
-Endpoint: `GET /orders/:id`
+```bash
+docker compose ps
 
-Muestra la orden con todos sus detalles e items.
+3. Ver logs:
 
-### 🧱 Consideraciones Técnicas
-- Estructura modular con NestJS (modules, controllers, services, repositories)
-- Uso de principios SOLID
-- ORM: Sequelize con PostgreSQL
-- Uso de DTOs y Pipes para validaciones
-- Integración con Redis para cache de consultas
-- Manejo de errores estructurado (filtros de excepción, status codes)
-- Contenerización con Docker
-- Al menos una prueba automatizada con Jest (e2e o unit test)
+```bash
+docker compose logs -f app-app-1
 
-### 📦 Estructura sugerida
-```
-src/
-├── orders/
-│   ├── dto/
-│   ├── entities/
-│   ├── orders.controller.ts
-│   ├── orders.service.ts
-│   ├── orders.module.ts
-├── app.module.ts
-├── main.ts
-```
+##⚡ Variables de Entorno
 
-### 📘 Extras valorados
-- Uso de interceptors para logging o transformación de respuestas
-- Jobs con `@nestjs/schedule` para depuración de órdenes antiguas (bonus)
-- Uso de ConfigModule para manejar variables de entorno
+Crea un archivo .env en la raíz:
 
-### 🚀 Entrega
-1. Haz un fork de este repositorio (o crea uno nuevo).
-2. Implementa tu solución y enviala con un push o enviandonos el enlace del repositorio publico.
-3. Incluye un README.md con:
-- Instrucciones para correr con docker o docker-compose
-- Cómo probar endpoints (Postman, Swagger, cURL)
-- Consideraciones técnicas
+```bash
+DB_HOST=db
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=postgres
+DB_NAME=orders_db
+REDIS_HOST=redis
+REDIS_PORT=6379
+PORT=3000
+DAYS_TO_KEEP=7
 
-❓ Preguntas adicionales 
-- ¿Cómo desacoplarías la lógica de negocio del framework NestJS?
-- ¿Cómo escalarías esta API para soportar miles de órdenes concurrentes?
-- ¿Qué ventajas ofrece Redis en este caso y qué alternativas considerarías?
+### Health check endpoint
 
-¡Buena suerte y disfruta el reto! 🚀
+- **GET /ping**
+- Respuesta:
+```json
+{
+  "status": "ok",
+  "timestamp": "2025-09-03T15:00:00.000Z"
+}
+
+## 📖 Documentación de Endpoints
+
+Todos los endpoints están bajo /orders.
+
+| Método | Ruta               | Descripción                                                   |
+|--------|--------------------|---------------------------------------------------------------|
+| GET    | `/orders`          | Listar órdenes (paginado, filtrado por estado opcional)       |
+| POST   | `/orders`          | Crear nueva orden                                             |
+| GET    | `/orders/:id`      | Obtener detalle de una orden                                  |
+| POST   | `/orders/:id/advance` | Avanzar estado de la orden (`initiated → sent → delivered`) |
+
+- Swagger UI: http://localhost:3000/api
+
+- Postman: Importa el archivo postman_collection.json si está en el repo.
+
+- cURL ejemplos:
+
+###Crear orden
+
+``bash
+curl -X POST http://localhost:3000/orders \
+-H "Content-Type: application/json" \
+-d '{
+  "clientName": "Juan Pérez",
+  "items": [
+    { "name": "Pizza", "quantity": 2 },
+    { "name": "Refresco", "quantity": 1 }
+  ]
+}'
+
+###Listar órdenes
+
+``bash
+curl http://localhost:3000/orders
+
+###Avanzar estado de una orden
+
+``bash
+curl -X POST http://localhost:3000/orders/1/advance
+
+##🕒 Limpieza automática de órdenes entregadas
+
+La aplicación incluye un cron job implementado con @nestjs/schedule que se ejecuta cada día a medianoche (0 0 * * *).
+
+- Elimina automáticamente las órdenes con estado delivered cuya fecha de actualización (updatedAt) sea mayor al valor configurado en DAYS_TO_KEEP.
+
+- Por defecto, se eliminan las órdenes entregadas con más de 7 días de antigüedad.
+
+###Configuración
+
+Puedes ajustar este valor en el archivo .env:
+
+``bash
+DAYS_TO_KEEP=7
+
+###Logs
+
+Cada vez que se ejecuta, el cron escribe en consola cuántas órdenes fueron eliminadas:
+
+``bash
+Cada vez que se ejecuta, el cron escribe en consola cuántas órdenes fueron eliminadas:
+
+### 🧪 Pruebas automatizadas
+
+- Se incluyen pruebas E2E con Jest.
+ 
+``bash
+yarn test:e2e
+
+## 💡 Consideraciones técnicas
+
+- NestJS modular: Modules, Controllers, Services, Repositories.
+
+- Principios SOLID: cada módulo tiene responsabilidades claras.
+
+- ORM Sequelize: usando sequelize-typescript con PostgreSQL.
+
+- DTOs y Pipes: para validaciones de entrada.
+
+- Redis: caché de consultas.
+
+- Manejo de errores: NotFoundException, BadRequestException, y filtro global AllExceptionsFilter.
+
+- Docker: contenerización completa.
+
+- Jobs programados: eliminación automática de órdenes entregadas con @nestjs/schedule.
+
+- Logging y observabilidad: interceptors y cron job logs.
+
+## ️ Comandos útiles
+
+- Levantar contenedores: docker compose up -d
+
+- Parar contenedores: docker compose down
+
+- Ejecutar migraciones: (si usas sequelize-cli)
+
+## Correr la app local sin Docker:
+
+``bash
+yarn install
+yarn start:dev
+
+## ✅ Extras
+
+- Paginación con nestjs-paginate
+
+- Filtrado por estado opcional
+
+- Cron job para limpieza de órdenes entregadas
+
+- Swagger para documentación automática
+
+## 4️⃣ Preguntas adicionales del challenge
+
+###¿Cómo desacoplarías la lógica de negocio del framework NestJS?
+
+- Crear servicios puros que no dependan de NestJS.
+
+- Controllers solo reciben requests y llaman a los servicios.
+
+- Los servicios pueden ser testeados de manera independiente usando Jest.
+
+###¿Cómo escalarías esta API para soportar miles de órdenes concurrentes?
+
+- Horizontal scaling: levantar múltiples instancias de la app con un load balancer.
+
+- Base de datos: usar replicación y pooling de conexiones en PostgreSQL.
+
+- Cache: Redis para reducir consultas repetitivas.
+
+- Colas de procesamiento: para operaciones pesadas, usar BullMQ o RabbitMQ.
+
+###¿Qué ventajas ofrece Redis en este caso y qué alternativas considerarías?
+
+###Ventajas:
+
+- Reduce carga en la base de datos con cache de consultas frecuentes (GET /orders).
+
+- Alta velocidad y soporte para TTL (auto-expiración).
+
+###Alternativas:
+
+- Memcached (solo cache de key-value simple).
+
+- Bases de datos en memoria como Hazelcast o Aerospike.
+
