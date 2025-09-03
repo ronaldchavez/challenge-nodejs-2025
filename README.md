@@ -19,16 +19,19 @@ API RESTful para manejo de órdenes usando NestJS, Sequelize, PostgreSQL y Redis
 
 ```bash
 docker compose -f docker-compose.yml up -d
+```
 
 2. Revisar los contenedores activos:
 
 ```bash
 docker compose ps
+```
 
 3. Ver logs:
 
 ```bash
 docker compose logs -f app-app-1
+```
 
 ##⚡ Variables de Entorno
 
@@ -44,6 +47,7 @@ REDIS_HOST=redis
 REDIS_PORT=6379
 PORT=3000
 DAYS_TO_KEEP=7
+```
 
 ### Health check endpoint
 
@@ -54,6 +58,7 @@ DAYS_TO_KEEP=7
   "status": "ok",
   "timestamp": "2025-09-03T15:00:00.000Z"
 }
+```
 
 ## 📖 Documentación de Endpoints
 
@@ -84,16 +89,19 @@ curl -X POST http://localhost:3000/orders \
     { "name": "Refresco", "quantity": 1 }
   ]
 }'
+```
 
 ###Listar órdenes
 
 ``bash
 curl http://localhost:3000/orders
+```
 
 ###Avanzar estado de una orden
 
-``bash
+```bash
 curl -X POST http://localhost:3000/orders/1/advance
+```
 
 ##🕒 Limpieza automática de órdenes entregadas
 
@@ -107,22 +115,21 @@ La aplicación incluye un cron job implementado con @nestjs/schedule que se ejec
 
 Puedes ajustar este valor en el archivo .env:
 
-``bash
+```bash
 DAYS_TO_KEEP=7
+```
 
 ###Logs
 
-Cada vez que se ejecuta, el cron escribe en consola cuántas órdenes fueron eliminadas:
-
-``bash
 Cada vez que se ejecuta, el cron escribe en consola cuántas órdenes fueron eliminadas:
 
 ### 🧪 Pruebas automatizadas
 
 - Se incluyen pruebas E2E con Jest.
  
-``bash
+```bash
 yarn test:e2e
+```
 
 ## 💡 Consideraciones técnicas
 
@@ -154,7 +161,7 @@ yarn test:e2e
 
 ## Correr la app local sin Docker:
 
-``bash
+```bash
 yarn install
 yarn start:dev
 
