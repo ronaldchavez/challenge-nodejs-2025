@@ -30,7 +30,7 @@ docker compose ps
 3. Ver logs:
 
 ```bash
-docker compose logs -f app-app-1
+docker compose logs -f app-1
 ```
 
 ##⚡ Variables de Entorno
