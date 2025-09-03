@@ -77,7 +77,7 @@ Todos los endpoints están bajo /orders.
 
 - cURL ejemplos:
 
-###Crear orden
+### Crear orden
 
 ``bash
 curl -X POST http://localhost:3000/orders \
@@ -91,7 +91,7 @@ curl -X POST http://localhost:3000/orders \
 }'
 ```
 
-###Listar órdenes
+### Listar órdenes
 
 ``bash
 curl http://localhost:3000/orders
@@ -103,7 +103,7 @@ curl http://localhost:3000/orders
 curl -X POST http://localhost:3000/orders/1/advance
 ```
 
-##🕒 Limpieza automática de órdenes entregadas
+## 🕒 Limpieza automática de órdenes entregadas
 
 La aplicación incluye un cron job implementado con @nestjs/schedule que se ejecuta cada día a medianoche (0 0 * * *).
 
@@ -111,7 +111,7 @@ La aplicación incluye un cron job implementado con @nestjs/schedule que se ejec
 
 - Por defecto, se eliminan las órdenes entregadas con más de 7 días de antigüedad.
 
-###Configuración
+### Configuración
 
 Puedes ajustar este valor en el archivo .env:
 
@@ -119,7 +119,7 @@ Puedes ajustar este valor en el archivo .env:
 DAYS_TO_KEEP=7
 ```
 
-###Logs
+### Logs
 
 Cada vez que se ejecuta, el cron escribe en consola cuántas órdenes fueron eliminadas:
 
@@ -164,6 +164,7 @@ yarn test:e2e
 ```bash
 yarn install
 yarn start:dev
+```
 
 ## ✅ Extras
 
@@ -177,7 +178,7 @@ yarn start:dev
 
 ## 4️⃣ Preguntas adicionales del challenge
 
-###¿Cómo desacoplarías la lógica de negocio del framework NestJS?
+### ¿Cómo desacoplarías la lógica de negocio del framework NestJS?
 
 - Crear servicios puros que no dependan de NestJS.
 
@@ -185,7 +186,7 @@ yarn start:dev
 
 - Los servicios pueden ser testeados de manera independiente usando Jest.
 
-###¿Cómo escalarías esta API para soportar miles de órdenes concurrentes?
+### ¿Cómo escalarías esta API para soportar miles de órdenes concurrentes?
 
 - Horizontal scaling: levantar múltiples instancias de la app con un load balancer.
 
@@ -195,15 +196,15 @@ yarn start:dev
 
 - Colas de procesamiento: para operaciones pesadas, usar BullMQ o RabbitMQ.
 
-###¿Qué ventajas ofrece Redis en este caso y qué alternativas considerarías?
+### ¿Qué ventajas ofrece Redis en este caso y qué alternativas considerarías?
 
-###Ventajas:
+### Ventajas:
 
 - Reduce carga en la base de datos con cache de consultas frecuentes (GET /orders).
 
 - Alta velocidad y soporte para TTL (auto-expiración).
 
-###Alternativas:
+### Alternativas:
 
 - Memcached (solo cache de key-value simple).
 
